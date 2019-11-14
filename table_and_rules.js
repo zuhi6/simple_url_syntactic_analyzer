@@ -28,14 +28,14 @@ const table = {
         "$" : 9
     },
     "D" : {
-        "pismeno_alebo_cislo" : 10 // regex budeme riest ze to je aj cislo aj znak
+        "pismeno_alebo_cislo" : 10 
     },
     "E" : {
         ":" : 11,
         "@" : 12
     },
     "F" : {
-        "pismeno_alebo_cislo" : 13 // regex budeme riest ze to je aj cislo aj znak
+        "pismeno_alebo_cislo" : 13
     },
     "G" : {
         ":" : 14,
@@ -44,7 +44,7 @@ const table = {
         "$" : 15
     },
     "H" : {
-        "pismeno_alebo_cislo" : 16 // regex budeme riest ze to je aj cislo aj znak
+        "pismeno_alebo_cislo" : 16 
     },
     "I" : {
         "." : 17,
@@ -54,7 +54,7 @@ const table = {
         "$" : 18
     },
     "J" : {
-        "pismeno_alebo_cislo" : 19, // regex budeme riest ze to je aj cislo aj znak
+        "pismeno_alebo_cislo" : 19,
         "/" : 19,
         "?" : 19,
         "$" : 19

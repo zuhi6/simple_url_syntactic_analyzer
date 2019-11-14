@@ -1,0 +1,22 @@
+{
+  "name": "simple_url_syntactic_analyzer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "simple_url_syntactic_analyzer.js",
+  "scripts": {
+    "build": "browserify simple_url_syntactic_analyzer.js -o bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zuhi6/simple_url_syntactic_analyzer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zuhi6/simple_url_syntactic_analyzer/issues"
+  },
+  "homepage": "https://github.com/zuhi6/simple_url_syntactic_analyzer#readme",
+  "devDependencies": {
+    "browserify": "^16.5.0"
+  }
+}

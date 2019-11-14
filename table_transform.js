@@ -6,31 +6,21 @@ transformTable = (table) => {
     let numbers = new Array(10).fill(0).map((item, index) => index);
 
     for (let key in table) {
-        // check if the property/key is defined in the object itself, not in parent
-        for (let sub_key in table[key]) {
-            if (sub_key == "pismeno_alebo_cislo") {
-                [lowerCase, upperCase, numbers].forEach(arr => arr.forEach(item => {
-                    table[key][item.toString()] = table[key][sub_key]
-                }))
-                delete table[key][sub_key];
-            }
-            if (sub_key == "pismeno") {
-                [lowerCase, upperCase].forEach(arr => arr.forEach(item => {
-                    table[key][item.toString()] = table[key][sub_key]
-                }))
-                delete table[key][sub_key];
-            }
-            if (sub_key == "cislo") {
-                numbers.forEach(item => {
-                    table[key][item.toString()] = table[key][sub_key]
-                })
-                delete table[key][sub_key];
-            }
+        for (let subKey in table[key]) {
+            (subKey == "pismeno_alebo_cislo" && addNewKeys([lowerCase, upperCase, numbers], table, key, subKey)) ||
+            (subKey == "pismeno" && addNewKeys([lowerCase, upperCase], table, key, subKey)) ||
+            (subKey == "cislo" && addNewKeys([numbers], table, key, subKey));
         }
-
     }
-
     return table;
 }
+
+addNewKeys = (arrays, table, key, subKey) => {
+    arrays.forEach(arr => arr.forEach(item => {
+        table[key][item.toString()] = table[key][subKey]
+    }))
+    delete table[key][subKey];
+}
+
 module.exports = { transformTable }
 

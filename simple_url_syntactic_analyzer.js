@@ -1,86 +1,103 @@
 let { table, rules } = require('./table_and_rules');
-let { transformTable } = require('./table_transform');
+const { transformTable } = require('./table_transform');
 
 table = transformTable(table);
 
-let url = `ftp://Q@Q/$`;
+let url = '';
 
-console.log(table);
-const startRule = "A";
+const startRule = ["A"];
 
-let startRuleArr = startRule.split('')
+checkUrls = () => {
+    
+    let urls = document.getElementById("urls").value.trim().split("|");
+    let table = document.getElementById("table")
+    const [ firstUrl ] = urls;
 
-const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
-
-    if (ruleArr[0][0] == url[0]) {
-        ruleArr = ruleArr.join('');
-        let baseLength = 1;
-        if (previousFirstRule == startRule) {
-            const tableObj = table[startRule][url[0]]
-            baseLength = tableObj.base.length;
-
-        }
-        if (!ruleArr[0].match(new RegExp('[A-Z]'))) {
-            ruleArr = ruleArr.substr(baseLength)
-            url = url.substr(baseLength);
-        }
-
-    } else if (regExpression) {
-        if (url[0].match(regExpression)) {
-            ruleArr.shift();
-
-            ruleArr = ruleArr.join('');
-            url = url.substr(1);
-            regExpression = undefined;
-        }
-    }
-    else if (!ruleArr[0].length && ruleArr.length != 1) {
-        ruleArr = ruleArr.join('').split('');
-        return iterateUrl(ruleArr, previousFirstRule, regExpression)
-    }
-    else {
-        ruleArr = ruleArr.join('');
+    if(!firstUrl) {
+        table.style.display ="none";
+        return;
     }
 
-    ruleArr = ruleArr.split('')
+    urls = urls.map(urlItem => {
+        url = `${urlItem}$`;
+        return {url:urlItem, result: iterateUrl(startRule)}
+    });
 
-    const firstChar = url[0].toString();
+    let rows = ''
 
-
-    if (firstChar == "$" && !ruleArr.length && url.length == 1) {
-        return true;
-    }
-
-    if (firstChar == "$" && !ruleArr.length && url.length > 1) {
-        return false;
-    }
-
-
-    const firstNeterm = ruleArr[0];
-
-    console.log(ruleArr, url, "2");
-    if (!(table[firstNeterm] && table[firstNeterm][firstChar])) {
-        console.log(firstNeterm, firstChar)
-        return false;
-    }
-
-    if (table[firstNeterm][firstChar].rule) {
-        ruleArr[0] = rules[table[firstNeterm][firstChar].rule];
-    }
-    else {
-        ruleArr[0] = rules[table[firstNeterm][firstChar]];
-    }
-
-    console.log(ruleArr, url, "3");
-
-    regExpression = (ruleArr[0] == '[A-Za-z]' || ruleArr[0] == '[0-9]') ? new RegExp(ruleArr[0]) : undefined
-
-    return iterateUrl(ruleArr, firstNeterm, regExpression)
-
-
+    urls.forEach(url => {
+        rows += `<tr>
+                    <td width='184' height='52'>
+                    ${url.url}
+                    </td>
+                    <td width='184' height='52'>
+                    ${url.result}
+                    </td>
+                 <tr>`
+    })
+   
+    table.style.display ="block";
+    document.getElementById("tbody").innerHTML = rows;
+  
 }
 
-console.log(iterateUrl(startRuleArr, undefined, undefined))
+const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
+   
+    //Get first nonterminal or terminal symbol from rule array
+    let [ [ firstNonTerm ] ] = ruleArr;
 
+    //Get first character of the remaining url to by analyzed
+    let [ firstChar ] = url;
 
+    //Check if they are equal if yes we are removing them from url and rule array
+    if (firstNonTerm == firstChar) {
+       
+        const tableObj = table[startRule][firstChar];
+        const baseLength = (previousFirstRule == startRule) ? tableObj.base.length : 1;
+     
+        //If the firstNonTerm character doesn't matche regexExpression '[A-Z]' we are cutting
+        !firstNonTerm.match(new RegExp('[A-Z]')) && (ruleArr = ruleArr.join('').substr(baseLength).split(''))
+                                                 && (url = url.substr(baseLength));
+                                    
+    } else if (regExpression) { 
+        // if there is regExpression present from last recursion we try to match the regex if true we are cutting 
+        firstChar.match(regExpression) && ruleArr.shift() && (url = url.substr(1))
+        
+    } else if (!firstNonTerm && ruleArr.length != 1) {
+        //epsilon rule -> just remove empty element at the start and run recursion again
+        ruleArr.shift();
+        return iterateUrl(ruleArr, previousFirstRule, regExpression);
+    }
+
+    /*need to run join.split everytime in case non of the above conditions are true,
+     so if there is new rule non terminal symbols are seperated*/
+    ruleArr = ruleArr.join('').split('');
+   
+    //updating firstChar and firstNonTerm with new characters after cutting
+    [ firstChar ] = url;
+    [ firstNonTerm ] = ruleArr;
+
+    // if we hit the $ sign we check if there are no rules left if not we check for url length if there is only dollar sign left we return true
+    if (firstChar == "$" && !ruleArr.length) {
+        return url.length == 1 ? true : false;
+    }
+
+    // if there is no rule that gets us to terminal symbol in url we return false
+    if (!(table[firstNonTerm] && table[firstNonTerm][firstChar])) {
+        return false;
+    }
+
+    //applying new rule
+    const newRule = table[firstNonTerm][firstChar].rule ? rules[table[firstNonTerm][firstChar].rule] 
+                    : rules[table[firstNonTerm][firstChar]];
+
+    //console.log(ruleArr, url, "3");
+    ruleArr.splice(0,1,newRule);
+
+    //check if new rule is regExpression if so we send it in recursion else we send it as null
+    regExpression = (newRule == '[A-Za-z]' || newRule == '[0-9]') ? new RegExp(newRule) : null
+
+    return iterateUrl(ruleArr, firstNonTerm, regExpression)
+
+}
 
