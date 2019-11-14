@@ -1,62 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 	<title>Simple URL - Syntactic Analyzer</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-
-	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+
 </head>
+
 <body>
 
-
 	<div class="container-contact100">
-		
 		<div class="wrap-contact100">
-			
-				<span class="contact100-form-title">
-					Simple URL - Syntactic Analyzer
-				</span>
-        <p>Enter URLs below separated by pipe e.g. http://test.url/path/to/dir?syntactic+analyzer|ftp://test@url/path/</p>
-
-				<div class="wrap-input100">
-					<textarea id="urls" class="input100" name="urls" placeholder="Enter URLs"></textarea>
-					<span class="focus-input100"></span>
-				</div>
-
-          <div class="table-wrapper">
-            <table id="table" class="fl-table" style="display:none">
-              <thead>
-                <tr>
-                  <th>Url</th>
-                  <th>Valid</th>
-                </tr>
-              </thead>
-              <tbody id="tbody">
-                
-              </tbody>
-            </table>
-        </div>
-
-				<div class="container-contact100-form-btn">
+			<span class="contact100-form-title">
+				Simple URL - Syntactic Analyzer
+			</span>
+			<p>Enter URLs below separated by pipe
+			</p>
+			<p>e.g. -> http://test.url/path/to/dir?syntactic+analyzer|ftp://test@url/path/</p>
+			<div class="wrap-input100">
+				<textarea id="urls" class="input100" name="urls" placeholder="Enter URLs"></textarea>
+				<span class="focus-input100"></span>
+			</div>
+			<div class="container-contact100-form-btn">
 					<button onClick="checkUrls()" class="contact100-form-btn">
 						Check Url
 					</button>
-				</div>
-      
+			</div>
+			<div class="table-wrapper">
+				<table id="table" class="fl-table" style="display:none;">
+					<thead>
+						<tr>
+							<th>Url</th>
+							<th>Valid</th>
+							<th>Trace</th>
+						</tr>
+					</thead>
+					<tbody id="tbody">
 
+					</tbody>
+				</table>
+			</div>
+			<div class="table-wrapper">
+				<table id="trace-table" class="fl-table" style="display: none;">
+					<thead>
+						<tr>
+							<th>Rules</th>
+							<th>Url</th>
+						</tr>
+					</thead>
+					<tbody id="trace-tbody">
+						
+					</tbody>
+				</table>
+			</div>
+
+			
 			<div class="contact100-more">
-			  @copyright <span class="contact100-more-highlight">Michal Zajic</span> and <span class="contact100-more-highlight">Timea Nagy</span>
+				@copyright <span class="contact100-more-highlight">Michal Zajic</span> and <span
+					class="contact100-more-highlight">Timea Nagy</span>
 			</div>
 		</div>
 	</div>
 
-
-
-<script src="bundle.js"></script>
+	<script src="bundle.js"></script>
 
 </body>
+
 </html>
