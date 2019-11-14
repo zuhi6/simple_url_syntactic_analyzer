@@ -1,16 +1,6 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-let { table, rules } = require('./table_and_rules');
-const { transformTable } = require('./table_transform');
 
-
-table = transformTable(table);
-
-let url = '';
-
-const startRule = ["A"];
-
-let trace = [];
-let previousRules = [];
+const { iterateUrl } = require('./simple_url_syntactic_analyzer');
 
 showTable = (trace) => {
     let traceTable = document.getElementById("trace-table");
@@ -56,10 +46,9 @@ checkUrls = () => {
         return;
     }
 
-    urls = urls.map(urlItem => {
-        trace = [];
-        url = `${urlItem}$`;
-        return { url: urlItem, result: iterateUrl(startRule), trace: trace}
+    urls = urls.map(url=> {
+        const {trace, result} = iterateUrl(url);
+        return { url , result, trace };
     });
 
     let rows = ''
@@ -84,8 +73,33 @@ checkUrls = () => {
     document.getElementById("tbody").innerHTML = rows;
 
 }
+},{"./simple_url_syntactic_analyzer":2}],2:[function(require,module,exports){
+let { table, rules } = require('./table_and_rules');
+const { transformTable } = require('./table_transform');
 
-const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
+
+table = transformTable(table);
+
+let url = '';
+
+const startRule = ["A"];
+
+let trace = [];
+
+
+const iterateUrl = (urlToAnalyze) => {
+
+    url = `${urlToAnalyze}$`;
+    trace = [];
+    const result = _iterateUrl(startRule);
+
+    return {
+        trace ,
+        result
+    }
+
+}
+const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
     //Get first nonterminal or terminal symbol from rule array
     let [[firstNonTerm]] = ruleArr;
@@ -111,7 +125,7 @@ const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     } else if (!firstNonTerm && ruleArr.length != 1) {
         //epsilon rule -> just remove empty element at the start and run recursion again
         ruleArr.shift();
-        return iterateUrl(ruleArr, previousFirstRule, regExpression);
+        return _iterateUrl(ruleArr, previousFirstRule, regExpression);
     }
 
     /*need to run join.split everytime in case non of the above conditions are true,
@@ -142,12 +156,13 @@ const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     //check if new rule is regular expression if so we send it in recursion else we send it as null
     regExpression = (newRule == '[A-Za-z]' || newRule == '[0-9]') ? new RegExp(newRule) : null
 
-    return iterateUrl(ruleArr, firstNonTerm, regExpression)
+    return _iterateUrl(ruleArr, firstNonTerm, regExpression)
 
 }
 
+module.exports = { iterateUrl }
 
-},{"./table_and_rules":2,"./table_transform":3}],2:[function(require,module,exports){
+},{"./table_and_rules":3,"./table_transform":4}],3:[function(require,module,exports){
 
 const table = {
     "A": {
@@ -303,7 +318,7 @@ const rules = {
 }
 
 module.exports = {table, rules}
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
 transformTable = (table) => {
 

@@ -10,80 +10,20 @@ const startRule = ["A"];
 
 let trace = [];
 
-showTable = (trace) => {
-    let traceTable = document.getElementById("trace-table");
-   
-    trace = trace.replace(/\$/g,'$,').split(',').reduce((result, value, index, array) =>{
-        if (index % 2 === 0)
-          result.push(array.slice(index, index + 2));
-        return result;
-      }, []);
 
-    trace = [...new Set(trace.map(trace => trace.toString()))].map(distinct => distinct.split(","));
-    
-    let rows = ''
+const iterateUrl = (urlToAnalyze) => {
 
-    trace.forEach(([rule, url]) => {
-        if(!url) return;
-        rows += `<tr>
-                    <td width='184' height='52'>
-                    ${rule}
-                    </td>
-                    <td width='184' height='52'>
-                    ${url}
-                    </td>                    
-                 <tr>`
-    })
-    traceTable.style.display = "block";
-    document.getElementById("trace-tbody").innerHTML = rows;
-}
+    url = `${urlToAnalyze}$`;
+    trace = [];
+    const result = _iterateUrl(startRule);
 
-checkUrls = () => {
-
-    let urls = document.getElementById("urls").value.trim().split("|").filter(url => url.length);
-    let table = document.getElementById("table")
-
-    document.getElementById("trace-table").style.display = "none";
-
-
-
-    const [firstUrl] = urls;
-
-    if (!firstUrl) {
-        table.style.display = "none";
-        return;
+    return {
+        trace ,
+        result
     }
 
-    urls = urls.map(urlItem => {
-        trace = [];
-        url = `${urlItem}$`;
-        return { url: urlItem, result: iterateUrl(startRule), trace: trace}
-    });
-
-    let rows = ''
-    
-    urls.forEach(url => {
-        const color = url.result ? 'lightgreen' : 'red';
-        rows += `<tr>
-                    <td width='184' height='52'>
-                    <mark style="background-color: ${color}">${url.url}<mark>
-                    </td>
-                    <td width='184' height='52'>
-                    ${url.result}
-                    </td>
-                    <td>
-						<input type=button value="Show Trace" onclick="showTable('${url.trace.join('')}')" style="width:100%">
-					</td>
-                    
-                 <tr>`
-    })
-
-    table.style.display = "block";
-    document.getElementById("tbody").innerHTML = rows;
-
 }
-
-const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
+const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
     //Get first nonterminal or terminal symbol from rule array
     let [[firstNonTerm]] = ruleArr;
@@ -109,7 +49,7 @@ const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     } else if (!firstNonTerm && ruleArr.length != 1) {
         //epsilon rule -> just remove empty element at the start and run recursion again
         ruleArr.shift();
-        return iterateUrl(ruleArr, previousFirstRule, regExpression);
+        return _iterateUrl(ruleArr, previousFirstRule, regExpression);
     }
 
     /*need to run join.split everytime in case non of the above conditions are true,
@@ -140,7 +80,8 @@ const iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     //check if new rule is regular expression if so we send it in recursion else we send it as null
     regExpression = (newRule == '[A-Za-z]' || newRule == '[0-9]') ? new RegExp(newRule) : null
 
-    return iterateUrl(ruleArr, firstNonTerm, regExpression)
+    return _iterateUrl(ruleArr, firstNonTerm, regExpression)
 
 }
 
+module.exports = { iterateUrl }

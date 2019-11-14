@@ -2,9 +2,9 @@
   "name": "simple_url_syntactic_analyzer",
   "version": "1.0.0",
   "description": "",
-  "main": "simple_url_syntactic_analyzer.js",
+  "main": "main.js",
   "scripts": {
-    "build": "browserify simple_url_syntactic_analyzer.js -o bundle.js"
+    "build": "browserify main.js -o bundle.js"
   },
   "repository": {
     "type": "git",
