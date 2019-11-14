@@ -9,7 +9,6 @@ let url = '';
 const startRule = ["A"];
 
 let trace = [];
-let previousRules = [];
 
 showTable = (trace) => {
     let traceTable = document.getElementById("trace-table");
