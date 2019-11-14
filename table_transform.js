@@ -7,9 +7,9 @@ transformTable = (table) => {
 
     for (let key in table) {
         for (let subKey in table[key]) {
-            (subKey == "pismeno_alebo_cislo" && addNewKeys([lowerCase, upperCase, numbers], table, key, subKey)) ||
-            (subKey == "pismeno" && addNewKeys([lowerCase, upperCase], table, key, subKey)) ||
-            (subKey == "cislo" && addNewKeys([numbers], table, key, subKey));
+            (subKey == "letter_or_number" && addNewKeys([lowerCase, upperCase, numbers], table, key, subKey)) ||
+            (subKey == "letter" && addNewKeys([lowerCase, upperCase], table, key, subKey)) ||
+            (subKey == "number" && addNewKeys([numbers], table, key, subKey));
         }
     }
     return table;

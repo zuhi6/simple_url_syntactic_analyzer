@@ -193,14 +193,14 @@ const table = {
         "$" : 9
     },
     "D" : {
-        "pismeno_alebo_cislo" : 10 
+        "letter_or_number" : 10 
     },
     "E" : {
         ":" : 11,
         "@" : 12
     },
     "F" : {
-        "pismeno_alebo_cislo" : 13
+        "letter_or_number" : 13
     },
     "G" : {
         ":" : 14,
@@ -209,7 +209,7 @@ const table = {
         "$" : 15
     },
     "H" : {
-        "pismeno_alebo_cislo" : 16 
+        "letter_or_number" : 16 
     },
     "I" : {
         "." : 17,
@@ -219,7 +219,7 @@ const table = {
         "$" : 18
     },
     "J" : {
-        "pismeno_alebo_cislo" : 19,
+        "letter_or_number" : 19,
         "/" : 19,
         "?" : 19,
         "$" : 19
@@ -230,23 +230,23 @@ const table = {
         "$" : 21
     },
     "L" : {
-        "pismeno_alebo_cislo" : 22
+        "letter_or_number" : 22
     },
     "M" : {
         "+" : 23,
         "$" : 24
     },
     "N" : {
-        "pismeno_alebo_cislo" : 25,
+        "letter_or_number" : 25,
         "/" : 26,
         "?" : 26,
         "$" : 26
     },
     "O" : {
-        "pismeno_alebo_cislo" : 27
+        "letter_or_number" : 27
     },
     "P" : {
-        "pismeno_alebo_cislo" : 28,
+        "letter_or_number" : 28,
         "+" : 29,
         "/" : 29,
         "." : 29,
@@ -256,23 +256,23 @@ const table = {
         "$" : 29
     },
     "Q" : {
-        "pismeno" : 30,
-        "cislo" : 31
+        "letter" : 30,
+        "number" : 31
     },
     "R" : {
-        "cislo" : 32
+        "number" : 32
     },
     "S" : {
-        "cislo" : 33,
+        "number" : 33,
         "/" : 34,
         "?" : 34,
         "$" : 34
     },
     "T" : {
-        "cislo" : 35
+        "number" : 35
     },
     "U" : {
-        "pismeno" : 36
+        "letter" : 36
     }
 
     
@@ -328,9 +328,9 @@ transformTable = (table) => {
 
     for (let key in table) {
         for (let subKey in table[key]) {
-            (subKey == "pismeno_alebo_cislo" && addNewKeys([lowerCase, upperCase, numbers], table, key, subKey)) ||
-            (subKey == "pismeno" && addNewKeys([lowerCase, upperCase], table, key, subKey)) ||
-            (subKey == "cislo" && addNewKeys([numbers], table, key, subKey));
+            (subKey == "letter_or_number" && addNewKeys([lowerCase, upperCase, numbers], table, key, subKey)) ||
+            (subKey == "letter" && addNewKeys([lowerCase, upperCase], table, key, subKey)) ||
+            (subKey == "number" && addNewKeys([numbers], table, key, subKey));
         }
     }
     return table;
