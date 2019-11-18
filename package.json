@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "build": "browserify main.js -o bundle.js"
+    "build": "browserify main.js -o bundle.js",
+    "test": "npx mocha"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,8 @@
   },
   "homepage": "https://github.com/zuhi6/simple_url_syntactic_analyzer#readme",
   "devDependencies": {
-    "browserify": "^16.5.0"
+    "browserify": "^16.5.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2"
   }
 }

@@ -18,7 +18,7 @@ const iterateUrl = (urlToAnalyze) => {
     const result = _iterateUrl(startRule);
 
     return {
-        trace ,
+        trace,
         result
     }
 
@@ -35,8 +35,15 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     //Check if they are equal if yes we are removing them from url and rule array
     if (firstNonTerm == firstChar) {
 
-        const tableObj = table[startRule][firstChar];
-        const baseLength = (previousFirstRule == startRule) ? tableObj.base.length : 1;
+        let baseLength = 1;
+
+        if (previousFirstRule == startRule) {
+
+            const tableObj = table[startRule][firstChar];
+            baseLength = tableObj.base.length;
+            if (tableObj && !url.startsWith(tableObj.base)) return false;
+
+        }
 
         //If the firstNonTerm character doesn't matche regexExpression '[A-Z]' we are cutting
         !firstNonTerm.match(new RegExp('[A-Z]')) && (ruleArr = ruleArr.join('').substr(baseLength).split(''))
