@@ -109,8 +109,6 @@ const table = {
     "U" : {
         "letter" : 36
     }
-
-    
 }
 
 const rules = {
