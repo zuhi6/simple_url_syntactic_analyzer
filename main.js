@@ -46,8 +46,8 @@ checkUrls = () => {
     }
 
     urls = urls.map(url=> {
-        const {trace, result} = iterateUrl(url);
-        return { url , result, trace };
+        const {trace, result, recover} = iterateUrl(url);
+        return { url , result, trace, recover};
     });
 
     let rows = ''
@@ -63,7 +63,10 @@ checkUrls = () => {
                     </td>
                     <td>
 						<input type=button value="Show Trace" onclick="showTable('${url.trace.join('')}')" style="width:100%">
-					</td>
+                    </td>
+                    <td width='184' height='52'>
+                    ${url.recover}
+                    </td>
                     
                  <tr>`
     })

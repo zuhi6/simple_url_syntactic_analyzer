@@ -47,8 +47,8 @@ checkUrls = () => {
     }
 
     urls = urls.map(url=> {
-        const {trace, result} = iterateUrl(url);
-        return { url , result, trace };
+        const {trace, result, recover} = iterateUrl(url);
+        return { url , result, trace, recover};
     });
 
     let rows = ''
@@ -64,7 +64,10 @@ checkUrls = () => {
                     </td>
                     <td>
 						<input type=button value="Show Trace" onclick="showTable('${url.trace.join('')}')" style="width:100%">
-					</td>
+                    </td>
+                    <td width='184' height='52'>
+                    ${url.recover}
+                    </td>
                     
                  <tr>`
     })
@@ -73,9 +76,117 @@ checkUrls = () => {
     document.getElementById("tbody").innerHTML = rows;
 
 }
-},{"./simple_url_syntactic_analyzer":2}],2:[function(require,module,exports){
+},{"./simple_url_syntactic_analyzer":3}],2:[function(require,module,exports){
+'use strict';
+module.exports = (function()
+{
+  function _min(d0, d1, d2, bx, ay)
+  {
+    return d0 < d1 || d2 < d1
+        ? d0 > d2
+            ? d2 + 1
+            : d0 + 1
+        : bx === ay
+            ? d1
+            : d1 + 1;
+  }
+
+  return function(a, b)
+  {
+    if (a === b) {
+      return 0;
+    }
+
+    if (a.length > b.length) {
+      var tmp = a;
+      a = b;
+      b = tmp;
+    }
+
+    var la = a.length;
+    var lb = b.length;
+
+    while (la > 0 && (a.charCodeAt(la - 1) === b.charCodeAt(lb - 1))) {
+      la--;
+      lb--;
+    }
+
+    var offset = 0;
+
+    while (offset < la && (a.charCodeAt(offset) === b.charCodeAt(offset))) {
+      offset++;
+    }
+
+    la -= offset;
+    lb -= offset;
+
+    if (la === 0 || lb < 3) {
+      return lb;
+    }
+
+    var x = 0;
+    var y;
+    var d0;
+    var d1;
+    var d2;
+    var d3;
+    var dd;
+    var dy;
+    var ay;
+    var bx0;
+    var bx1;
+    var bx2;
+    var bx3;
+
+    var vector = [];
+
+    for (y = 0; y < la; y++) {
+      vector.push(y + 1);
+      vector.push(a.charCodeAt(offset + y));
+    }
+
+    var len = vector.length - 1;
+
+    for (; x < lb - 3;) {
+      bx0 = b.charCodeAt(offset + (d0 = x));
+      bx1 = b.charCodeAt(offset + (d1 = x + 1));
+      bx2 = b.charCodeAt(offset + (d2 = x + 2));
+      bx3 = b.charCodeAt(offset + (d3 = x + 3));
+      dd = (x += 4);
+      for (y = 0; y < len; y += 2) {
+        dy = vector[y];
+        ay = vector[y + 1];
+        d0 = _min(dy, d0, d1, bx0, ay);
+        d1 = _min(d0, d1, d2, bx1, ay);
+        d2 = _min(d1, d2, d3, bx2, ay);
+        dd = _min(d2, d3, dd, bx3, ay);
+        vector[y] = dd;
+        d3 = d2;
+        d2 = d1;
+        d1 = d0;
+        d0 = dy;
+      }
+    }
+
+    for (; x < lb;) {
+      bx0 = b.charCodeAt(offset + (d0 = x));
+      dd = ++x;
+      for (y = 0; y < len; y += 2) {
+        dy = vector[y];
+        vector[y] = dd = _min(dy, d0, dd, bx0, vector[y + 1]);
+        d0 = dy;
+      }
+    }
+
+    return dd;
+  };
+})();
+
+
+},{}],3:[function(require,module,exports){
 let { table, rules } = require('./table_and_rules');
 const { transformTable } = require('./table_transform');
+const levenshtein = require('js-levenshtein');
 
 
 table = transformTable(table);
@@ -86,16 +197,20 @@ const startRule = ["A"];
 
 let trace = [];
 
+let recover = false;
+
 
 const iterateUrl = (urlToAnalyze) => {
 
     url = `${urlToAnalyze}$`;
     trace = [];
-    const result = _iterateUrl(startRule);
+    const result = (_iterateUrl(startRule) && !recover) ? true : false;
+
 
     return {
-        trace ,
-        result
+        trace,
+        result,
+        recover
     }
 
 }
@@ -111,8 +226,15 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     //Check if they are equal if yes we are removing them from url and rule array
     if (firstNonTerm == firstChar) {
 
-        const tableObj = table[startRule][firstChar];
-        const baseLength = (previousFirstRule == startRule) ? tableObj.base.length : 1;
+        let baseLength = 1;
+
+        if (previousFirstRule == startRule) {
+            
+            const tableObj = table[startRule][firstChar];
+            baseLength = tableObj.base.length;
+            if (tableObj && !url.startsWith(tableObj.base)) return false;
+
+        }
 
         //If the firstNonTerm character doesn't matche regexExpression '[A-Z]' we are cutting
         !firstNonTerm.match(new RegExp('[A-Z]')) && (ruleArr = ruleArr.join('').substr(baseLength).split(''))
@@ -138,7 +260,7 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
     // if we hit the $ sign we check if there are no rules left if not we check for url length if there is only dollar sign left we return true
     if (firstChar == "$" && !ruleArr.length) {
-        return url.length == 1 ? true : false;
+        return (url.length == 1) ? true : false;
     }
 
     // if there is no rule that gets us to terminal symbol in url we return false
@@ -147,6 +269,23 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     }
 
     //applying new rule
+    if(!previousFirstRule) {
+        let min = Infinity;
+
+        for (let key in table[startRule]) {
+            const base = table[startRule][key].base;
+            const editDist = levenshtein(base, url.slice(0, base.length));
+            if(editDist < min) {
+                min = editDist;
+                firstChar =  key;
+                recover = min == 0 ? false : true; 
+                
+            }
+        }
+        const base = table[startRule][firstChar].base;
+        const regex = new RegExp(`^.{${base.length}}`,"g");
+        url = url.replace(regex, base);
+    }
     const newRule = table[firstNonTerm][firstChar].rule ? rules[table[firstNonTerm][firstChar].rule]
         : rules[table[firstNonTerm][firstChar]];
 
@@ -162,7 +301,7 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
 module.exports = { iterateUrl }
 
-},{"./table_and_rules":3,"./table_transform":4}],3:[function(require,module,exports){
+},{"./table_and_rules":4,"./table_transform":5,"js-levenshtein":2}],4:[function(require,module,exports){
 
 const table = {
     "A": {
@@ -274,8 +413,6 @@ const table = {
     "U" : {
         "letter" : 36
     }
-
-    
 }
 
 const rules = {
@@ -318,7 +455,7 @@ const rules = {
 }
 
 module.exports = {table, rules}
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 
 transformTable = (table) => {
 

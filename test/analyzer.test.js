@@ -40,6 +40,7 @@ const http = [
     ["http://foo.com/@path", false],    // incorrect path
     ["http://foo.com?search:foo", false],   // incorrect search
     ["http://foo.com?foo/bar", false],  // incorrect order - search before path
+    ["http://foo@bar/path/to", false]
 ];
 
 const ftp = [
@@ -108,6 +109,7 @@ describe('Simple Url - Syntactic Analyzer', () => {
     it('http url test', () => {
         // add an assertion
         http.forEach(([url, result]) => {
+
             assert.equal(iterateUrl(url).result, result, `failed test at url: ${url}`);
         });
 

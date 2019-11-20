@@ -1,5 +1,6 @@
 let { table, rules } = require('./table_and_rules');
 const { transformTable } = require('./table_transform');
+const levenshtein = require('js-levenshtein');
 
 
 table = transformTable(table);
@@ -10,16 +11,20 @@ const startRule = ["A"];
 
 let trace = [];
 
+let recover = false;
+
 
 const iterateUrl = (urlToAnalyze) => {
 
     url = `${urlToAnalyze}$`;
     trace = [];
-    const result = _iterateUrl(startRule);
+    const result = (_iterateUrl(startRule) && !recover) ? true : false;
+
 
     return {
         trace,
-        result
+        result,
+        recover
     }
 
 }
@@ -39,6 +44,7 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
         if (previousFirstRule == startRule) {
 
+            
             const tableObj = table[startRule][firstChar];
             baseLength = tableObj.base.length;
             if (tableObj && !url.startsWith(tableObj.base)) return false;
@@ -69,7 +75,7 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
     // if we hit the $ sign we check if there are no rules left if not we check for url length if there is only dollar sign left we return true
     if (firstChar == "$" && !ruleArr.length) {
-        return url.length == 1 ? true : false;
+        return (url.length == 1) ? true : false;
     }
 
     // if there is no rule that gets us to terminal symbol in url we return false
@@ -78,6 +84,23 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     }
 
     //applying new rule
+    if(!previousFirstRule) {
+        let min = Infinity;
+
+        for (let key in table[startRule]) {
+            const base = table[startRule][key].base;
+            const editDist = levenshtein(base, url.slice(0, base.length));
+            if(editDist < min) {
+                min = editDist;
+                firstChar =  key;
+                recover = min == 0 ? false : true; 
+                
+            }
+        }
+        const base = table[startRule][firstChar].base;
+        const regex = new RegExp(`^.{${base.length}}`,"g");
+        url = url.replace(regex, base);
+    }
     const newRule = table[firstNonTerm][firstChar].rule ? rules[table[firstNonTerm][firstChar].rule]
         : rules[table[firstNonTerm][firstChar]];
 
