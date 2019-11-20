@@ -19,7 +19,7 @@ const iterateUrl = (urlToAnalyze) => {
     url = `${urlToAnalyze}$`;
     trace = [];
 
-    const result = (_iterateUrl(startRule) && !recover) ? true : false;
+    const result = _iterateUrl(startRule);
 
     return {
         trace,
@@ -43,8 +43,7 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
         let baseLength = 1;
 
         if (previousFirstRule == startRule) {
-
-            
+           
             const tableObj = table[startRule][firstChar];
             baseLength = tableObj.base.length;
             if (tableObj && !url.startsWith(tableObj.base)) return false;

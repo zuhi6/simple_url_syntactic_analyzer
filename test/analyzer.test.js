@@ -31,7 +31,7 @@ const http = [
     ["http://Youtube.com.foo:48484/Watch/Video?123456+foo+bar", true, false],
     
     // incorrect urls
-    ["hptt://foo", false, true],  // incorrect http address
+    ["hptt://foo", true, true],  // incorrect http address
     ["http://", false, false],  // missing hostname
     ["http:///", false, false],    // missing hostname and path
     ["http://foo@", false, false], // incorrect hostname
@@ -56,7 +56,7 @@ const ftp = [
 
     // incorrect urls
     ["foo/bar", false, true], // missing ftp address
-    ["fpt://a@b/", false, true],  // incorrect ftp address
+    ["fpt://a@b/", true, true],  // incorrect ftp address
     ["ftp://@hostname/foo", false, false],    // missing user
     ["ftp://a@/foo", false, false],    // missing hostname
     ["ftp://foo:@foo/", false, false], // missing password
@@ -75,7 +75,7 @@ const telnet = [
     ["telnet://foo:123456@Foo:123456", true, false],
 
     // incorrect urls
-    ["tenet://foo:123456@foo:123456", false, true],   // incorrect telnet address
+    ["tenet://foo:123456@foo:123456", true, true],   // incorrect telnet address
     ["telnet://", false, false],   // missing login
     ["telnet://foo@foo/path", false, false],   // path is not allowed in telnet
     ["telnet://foo@foo:foo", false, false], // incorrect port
