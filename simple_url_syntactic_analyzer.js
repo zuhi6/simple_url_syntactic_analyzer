@@ -18,8 +18,8 @@ const iterateUrl = (urlToAnalyze) => {
 
     url = `${urlToAnalyze}$`;
     trace = [];
-    const result = (_iterateUrl(startRule) && !recover) ? true : false;
 
+    const result = (_iterateUrl(startRule) && !recover) ? true : false;
 
     return {
         trace,
@@ -83,7 +83,7 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
         return false;
     }
 
-    //applying new rule
+    // recover for the StartRule
     if(!previousFirstRule) {
         let min = Infinity;
 
@@ -97,10 +97,13 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
                 
             }
         }
+
         const base = table[startRule][firstChar].base;
         const regex = new RegExp(`^.{${base.length}}`,"g");
         url = url.replace(regex, base);
     }
+
+    //applying new rule
     const newRule = table[firstNonTerm][firstChar].rule ? rules[table[firstNonTerm][firstChar].rule]
         : rules[table[firstNonTerm][firstChar]];
 
@@ -111,7 +114,6 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
     regExpression = (newRule == '[A-Za-z]' || newRule == '[0-9]') ? new RegExp(newRule) : null
 
     return _iterateUrl(ruleArr, firstNonTerm, regExpression)
-
 }
 
 module.exports = { iterateUrl }
