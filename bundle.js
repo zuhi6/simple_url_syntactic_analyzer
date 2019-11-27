@@ -205,7 +205,7 @@ const iterateUrl = (urlToAnalyze) => {
     url = `${urlToAnalyze}$`;
     trace = [];
 
-    const result = (_iterateUrl(startRule) && !recover) ? true : false;
+    const result = _iterateUrl(startRule);
 
     return {
         trace,
@@ -216,28 +216,27 @@ const iterateUrl = (urlToAnalyze) => {
 }
 const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
 
-    //Get first nonterminal or terminal symbol from rule array
+    // get first nonterminal or terminal symbol from rule array
     let [[firstNonTerm]] = ruleArr;
 
-    //Get first character of the remaining url to by analyzed
+    // get first character of the remaining url to by analyzed
     let [firstChar] = url;
 
     trace.push([ruleArr.join(''), url]);
-    //Check if they are equal if yes we are removing them from url and rule array
+    // check if they are equal if yes we are removing them from url and rule array
     if (firstNonTerm == firstChar) {
 
         let baseLength = 1;
 
         if (previousFirstRule == startRule) {
-
-            
+           
             const tableObj = table[startRule][firstChar];
             baseLength = tableObj.base.length;
             if (tableObj && !url.startsWith(tableObj.base)) return false;
 
         }
 
-        //If the firstNonTerm character doesn't matche regexExpression '[A-Z]' we are cutting
+        // if the firstNonTerm character doesn't matche regexExpression '[A-Z]' we are cutting
         !firstNonTerm.match(new RegExp('[A-Z]')) && (ruleArr = ruleArr.join('').substr(baseLength).split(''))
             && (url = url.substr(baseLength));
 
@@ -251,11 +250,11 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
         return _iterateUrl(ruleArr, previousFirstRule, regExpression);
     }
 
-    /*need to run join.split everytime in case non of the above conditions are true,
-     so if there is new rule non terminal symbols are seperated*/
+    /* need to run join.split everytime in case non of the above conditions are true,
+     so if there is new rule non terminal symbols are seperated */
     ruleArr = ruleArr.join('').split('');
 
-    //updating firstChar and firstNonTerm with new characters after cutting
+    // updating firstChar and firstNonTerm with new characters after cutting
     [firstChar] = url;
     [firstNonTerm] = ruleArr;
 
@@ -289,14 +288,19 @@ const _iterateUrl = (ruleArr, previousFirstRule, regExpression) => {
         url = url.replace(regex, base);
     }
 
-    //applying new rule
-    const newRule = table[firstNonTerm][firstChar].rule ? rules[table[firstNonTerm][firstChar].rule]
-        : rules[table[firstNonTerm][firstChar]];
+    // applying new rule
+    const ruleNumber = table[firstNonTerm][firstChar].rule ? table[firstNonTerm][firstChar].rule : table[firstNonTerm][firstChar];
+    const newRule = rules[ruleNumber];
 
-    //updating first element of rules array               
+    // additionally added rules for recover
+    if (ruleNumber > 90){
+        recover = true;
+    }
+
+    // updating first element of rules array               
     ruleArr.splice(0, 1, newRule);
 
-    //check if new rule is regular expression if so we send it in recursion else we send it as null
+    // check if new rule is regular expression if so we send it in recursion else we send it as null
     regExpression = (newRule == '[A-Za-z]' || newRule == '[0-9]') ? new RegExp(newRule) : null
 
     return _iterateUrl(ruleArr, firstNonTerm, regExpression)
@@ -401,10 +405,12 @@ const table = {
         "number" : 31
     },
     "R" : {
-        "number" : 32
+        "number" : 32,
+        "letter" : 98 // recover
     },
     "S" : {
         "number" : 33,
+        "letter" : 99, // recover
         "/" : 34,
         "?" : 34,
         "$" : 34
@@ -453,7 +459,11 @@ const rules = {
     33: "TS",
     34: "",
     35: "[0-9]",
-    36: "[A-Za-z]"
+    36: "[A-Za-z]",
+
+    // additionally added rules for recover
+    98: "US",
+    99: "US"
 }
 
 module.exports = {table, rules}

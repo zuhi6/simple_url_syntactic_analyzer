@@ -95,10 +95,12 @@ const table = {
         "number" : 31
     },
     "R" : {
-        "number" : 32
+        "number" : 32,
+        "letter" : 98 // recover
     },
     "S" : {
         "number" : 33,
+        "letter" : 99, // recover
         "/" : 34,
         "?" : 34,
         "$" : 34
@@ -147,7 +149,11 @@ const rules = {
     33: "TS",
     34: "",
     35: "[0-9]",
-    36: "[A-Za-z]"
+    36: "[A-Za-z]",
+
+    // additionally added rules for recover
+    98: "US",
+    99: "US"
 }
 
 module.exports = {table, rules}

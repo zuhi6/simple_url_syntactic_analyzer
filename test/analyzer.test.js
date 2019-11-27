@@ -31,15 +31,17 @@ const http = [
     ["http://Youtube.com.foo:48484/Watch/Video?123456+foo+bar", true, false],
     
     // incorrect urls
-    ["hptt://foo", true, true],  // incorrect http address
     ["http://", false, false],  // missing hostname
     ["http:///", false, false],    // missing hostname and path
     ["http://foo@", false, false], // incorrect hostname
     ["http://foo@bar/path/to", false, false], // incorrect hostname
-    ["http://youtube.com:foo", false, false],  // incorrect port
     ["http://foo.com/@path", false, false],    // incorrect path
     ["http://foo.com?search:foo", false, false],   // incorrect search
     ["http://foo.com?foo/bar", false, false],  // incorrect order - search before path
+
+    // urls with recover 
+    ["hptt://foo", true, true],  // incorrect http address
+    ["http://youtube.com:foo", true, true],  // incorrect port
 ];
 
 const ftp = [
@@ -55,12 +57,14 @@ const ftp = [
     ["ftp://foo:fooBAR123456@foo:123456/foo/bar/foo/", true, false],
 
     // incorrect urls
-    ["foo/bar", false, true], // missing ftp address
-    ["fpt://a@b/", true, true],  // incorrect ftp address
     ["ftp://@hostname/foo", false, false],    // missing user
     ["ftp://a@/foo", false, false],    // missing hostname
     ["ftp://foo:@foo/", false, false], // missing password
     ["ftp://foo:@foo/foopath?search", false, false],   // search not allowed in ftp
+
+    // urls with recover 
+    ["foo/bar", false, true], // missing ftp address
+    ["fpt://a@b/", true, true],  // incorrect ftp address
 ];
 
 const telnet = [
@@ -75,10 +79,12 @@ const telnet = [
     ["telnet://foo:123456@Foo:123456", true, false],
 
     // incorrect urls
-    ["tenet://foo:123456@foo:123456", true, true],   // incorrect telnet address
     ["telnet://", false, false],   // missing login
     ["telnet://foo@foo/path", false, false],   // path is not allowed in telnet
-    ["telnet://foo@foo:foo", false, false], // incorrect port
+
+    // urls with recover 
+    ["tenet://foo:123456@foo:123456", true, true],   // incorrect telnet address
+    ["telnet://foo@foo:foo", true, true], // incorrect port
 ];
 
 const mailto = [
@@ -95,13 +101,14 @@ const mailto = [
     ["mailto::foo@foo.BAR.foo.123", true, false],
 
     // incorrect urls
-    ["malto::a@b", false, true],  // incorrect mailto address
     ["mailto::", false, false], // missing xalphas
     ["mailto::a@", false, false],  // missing hostname
     ["mailto::a", false, false],   // missing hostname and @ character
     ["mailto::a@b.", false, false],    // incorrect hostname
     ["mailto::a.foo.bar@b", false, false], // incorrect xalphas
-    
+
+    // urls with recover 
+    ["malto::a@b", false, true],  // incorrect mailto address    
 ]
 
 describe('Simple Url - Syntactic Analyzer', () => {
